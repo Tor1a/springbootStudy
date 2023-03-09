@@ -18,18 +18,40 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
+
+
+
     public Long join(Member member){
-        //같은 이름이 있는 중복 회원x
-        extracted(member); //중복 회원 검증
-        memberRepository.save(member);
-        return member.getId();
+        Long start = System.currentTimeMillis();
+
+        try {
+            //같은 이름이 있는 중복 회원x
+            extracted(member); //중복 회원 검증
+            memberRepository.save(member);
+            return member.getId();
+        }finally {
+            Long finish = System.currentTimeMillis();
+            Long timeMs = finish - start;
+            System.out.println("join =" + timeMs + "ms");
+        }
+
     }
 
     private void extracted(Member member) {
-        memberRepository.findByName(member.getName())
-                .ifPresent(m -> {
-                    throw new IllegalStateException("이미 존재하는 회원입니다");
-       });
+        Long start = System.currentTimeMillis();
+        try {
+            memberRepository.findByName(member.getName())
+                    .ifPresent(m -> {
+                        throw new IllegalStateException("이미 존재하는 회원입니다");
+                    });
+        }finally {
+            Long finish = System.currentTimeMillis();
+            Long timeMs = finish - start;
+            System.out.println("findMembers" + timeMs + "ms");
+
+        }
+
+
     }
 
     public List<Member> findMembers(){
